@@ -122,8 +122,6 @@
             font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.1s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             color: white;
             position: relative;
             display: flex;
@@ -131,21 +129,39 @@
             align-items: center;
             justify-content: center;
             height: 100px;
-        }
-        button.action-btn:active {
-            transform: scale(0.96);
-        }
-        
-        button .icon {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
+            border-bottom: 5px solid rgba(0,0,0,0.2); 
+            box-shadow: 0 3px 5px rgba(0, 0, 0, .2);
+            transition: all 0.1s;
         }
 
-        /* 色設定 */
-        #btn-pee-ok { background: linear-gradient(135deg, #FFC107, #FFB300); color: #444; }
-        #btn-pee-ng { background: linear-gradient(135deg, #5DADE2, #3498db); }
-        #btn-poo-ok { background: linear-gradient(135deg, #8d6e63, #795548); }
-        #btn-poo-ng { background: linear-gradient(135deg, #78909c, #607d8b); }
+        /* ボタンを押した時の動き */
+        button.action-btn:active {
+            transform: translateY(3px);
+            border-bottom-width: 2px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
+        }
+
+        #btn-pee-ok { 
+            background-color: #FFC107; 
+            border-bottom-color: #bfa004; /* 背景より濃い色 */
+            color: #444; 
+        }
+
+        #btn-pee-ng { 
+            background-color: #5DADE2; 
+            border-bottom-color: #2e86c1; 
+        }
+
+        #btn-poo-ok { 
+            background-color: #8d6e63; 
+            border-bottom-color: #5d4037; 
+        }
+
+        #btn-poo-ng { 
+            background-color: #78909c; 
+            border-bottom-color: #455a64; 
+        }
+        
         
         /* 履歴エリア */
         .history-section {
