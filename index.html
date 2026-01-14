@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🐶ちょこのトイレ記録🚽</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, "ヒラギノ角ゴ ProN W3", Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.4rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        /* 最新情報の表示エリア */
+        .status-card {
+            background: white;
+            padding: 20px 15px;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        .status-label {
+            font-size: 1rem;
+            color: #666;
+            text-align: left;
+            width: 80px;
+        }
+        .status-value {
+            text-align: right;
+            flex-grow: 1;
+        }
+        .time-display {
+            display: block;
+            font-weight: 800;
+            font-size: 1.6rem;
+            color: #2c3e50;
+            line-height: 1.2;
+        }
+        .status-detail {
+            font-size: 0.85rem;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+        .tag-ok { color: #d35400; background: #fff5e6; border: 1px solid #f39c12; }
+        .tag-ng { color: #2980b9; background: #eaf6ff; border: 1px solid #3498db; }
+
+        .date-label {
+            font-size: 0.9rem;
+            font-weight: normal;
+            color: #888;
+            margin-right: 8px;
+        }
+
+        /* 区切り線 */
+        .divider {
+            height: 1px;
+            background: #eee;
+            margin: 5px 20px;
+        }
+
+        /* ボタンエリア */
+        .section-title {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 8px;
+            margin-left: 5px;
+            font-weight: bold;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        button.action-btn {
+            border: none;
+            border-radius: 16px;
+            padding: 20px 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: white;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100px;
+        }
+        button.action-btn:active {
+            transform: scale(0.96);
+        }
+        
+        button .icon {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        /* 色設定 */
+        #btn-pee-ok { background: linear-gradient(135deg, #FFC107, #FFB300); color: #444; }
+        #btn-pee-ng { background: linear-gradient(135deg, #5DADE2, #3498db); }
+        #btn-poo-ok { background: linear-gradient(135deg, #8d6e63, #795548); }
+        #btn-poo-ng { background: linear-gradient(135deg, #78909c, #607d8b); }
+        
+        /* 履歴エリア */
+        .history-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .toggle-btn {
+            width: 100%;
+            background-color: #f0f2f5;
+            color: #555;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #history-list {
+            display: none;
+            list-style: none;
+            padding: 0;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .date-header {
+            background-color: #eef2f5;
+            padding: 8px 12px;
+            margin-top: 20px;
+            font-weight: bold;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #555;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 5px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .log-info {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+        
+        .log-type {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-right: 10px;
+        }
+        
+        .type-pee-ok { color: #f39c12; }
+        .type-pee-ng { color: #3498db; }
+        .type-poo-ok { color: #795548; }
+        .type-poo-ng { color: #607d8b; }
+        .type-poo    { color: #795548; }
+
+        .log-time {
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .edit-btn {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🐶ちょこのトイレ記録🚽</h1>
+
+    <div class="status-card">
+        <div class="status-row">
+            <div class="status-label">おしっこ</div>
+            <div class="status-value">
+                <span id="last-pee" class="time-display">--</span>
+                <span id="last-pee-detail"></span>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="status-row">
+            <div class="status-label">うんこ</div>
+            <div class="status-value">
+                <span id="last-poo" class="time-display">--</span>
+                <span id="last-poo-detail"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-title">おしっこ</div>
+    <div class="button-group">
+        <button id="btn-pee-ok" class="action-btn" onclick="addLog('おしっこ（成功）')">
+            <span class="icon">😊</span>
+            成功
+        </button>
+        <button id="btn-pee-ng" class="action-btn" onclick="addLog('おしっこ（失敗）')">
+            <span class="icon">😭</span>
+            失敗
+        </button>
+    </div>
+
+    <div class="section-title">うんこ</div>
+    <div class="button-group">
+        <button id="btn-poo-ok" class="action-btn" onclick="addLog('うんこ（成功）')">
+            <span class="icon">💩</span>
+            成功
+        </button>
+        <button id="btn-poo-ng" class="action-btn" onclick="addLog('うんこ（失敗）')">
+            <span class="icon">😱</span>
+            失敗
+        </button>
+    </div>
+
+    <div class="history-section">
+        <button class="toggle-btn" onclick="toggleHistory()">📅 履歴を表示 / 非表示</button>
+        <ul id="history-list">
+            </ul>
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="clearAllData()" style="background:none; border:none; color:#ccc; font-size:0.8rem; cursor:pointer;">全データを削除</button>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'toilet_log_v5'; // バージョン5
+        let logs = [];
+
+        window.onload = function() {
+            loadLogs();
+            updateDisplay();
+        };
+
+        function addLog(type) {
+            const now = new Date();
+            const record = {
+                id: Date.now(),
+                type: type,
+                timestamp: now.getTime()
+            };
+            logs.unshift(record);
+            saveLogs();
+            updateDisplay();
+            if (document.getElementById('history-list').style.display === 'block') {
+                renderHistory();
+            }
+        }
+
+        // 時間の編集機能
+        function editLog(id) {
+            const logIndex = logs.findIndex(log => log.id === id);
+            if (logIndex === -1) return;
+            
+            const log = logs[logIndex];
+            const oldTime = formatTime(log.timestamp);
+            
+            // 入力ダイアログを表示
+            const newTimeStr = prompt('時間を修正してください (例: 12:30)', oldTime);
+            
+            if (newTimeStr && newTimeStr !== oldTime) {
+                // 入力された時間を解析
+                const parts = newTimeStr.split(':');
+                if (parts.length === 2) {
+                    const hours = parseInt(parts[0]);
+                    const minutes = parseInt(parts[1]);
+                    
+                    if (!isNaN(hours) && !isNaN(minutes) && hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60) {
+                        // 日時はそのままで、時間だけ変更
+                        const newDate = new Date(log.timestamp);
+                        newDate.setHours(hours);
+                        newDate.setMinutes(minutes);
+                        
+                        // ログを更新
+                        logs[logIndex].timestamp = newDate.getTime();
+                        
+                        // 時間順に並び替え（時間が変わったため）
+                        logs.sort((a, b) => b.timestamp - a.timestamp);
+                        
+                        saveLogs();
+                        updateDisplay();
+                        renderHistory();
+                    } else {
+                        alert('時間の形式が正しくありません。半角数字とコロン(:)で入力してください。');
+                    }
+                }
+            }
+        }
+
+        // 最新情報の表示
+        function updateDisplay() {
+            const lastPeeLog = logs.find(log => log.type.includes('おしっこ'));
+            updateStatusElement('last-pee', 'last-pee-detail', lastPeeLog);
+
+            const lastPooLog = logs.find(log => log.type.includes('うんこ'));
+            updateStatusElement('last-poo', 'last-poo-detail', lastPooLog);
+        }
+
+        function updateStatusElement(timeId, detailId, log) {
+            const timeEl = document.getElementById(timeId);
+            const detailEl = document.getElementById(detailId);
+
+            if (log) {
+                timeEl.innerHTML = formatFriendlyTime(log.timestamp);
+                
+                if (log.type.includes('成功')) {
+                    detailEl.innerHTML = '成功 ✨';
+                    detailEl.className = 'status-detail tag-ok';
+                } else if (log.type.includes('失敗')) {
+                    detailEl.innerHTML = '失敗 💦';
+                    detailEl.className = 'status-detail tag-ng';
+                } else {
+                    detailEl.innerHTML = '';
+                    detailEl.className = '';
+                }
+            } else {
+                timeEl.innerHTML = '<span style="color:#ccc; font-size:1.5rem;">--:--</span>';
+                detailEl.innerHTML = '';
+                detailEl.className = '';
+            }
+        }
+
+        function formatFriendlyTime(timestamp) {
+            const targetDate = new Date(timestamp);
+            const now = new Date();
+            const targetDateStr = targetDate.toDateString();
+            const nowDateStr = now.toDateString();
+            
+            const yesterdayDate = new Date(now);
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            const yesterdayDateStr = yesterdayDate.toDateString();
+
+            const timeStr = formatTime(timestamp);
+
+            let dateLabel = '';
+            if (targetDateStr === nowDateStr) {
+                dateLabel = '今日';
+            } else if (targetDateStr === yesterdayDateStr) {
+                dateLabel = '昨日';
+            } else {
+                dateLabel = `${targetDate.getMonth() + 1}/${targetDate.getDate()}`;
+            }
+            return `<span class="date-label">${dateLabel}</span>${timeStr}`;
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        function renderHistory() {
+            const listElement = document.getElementById('history-list');
+            listElement.innerHTML = '';
+
+            if (logs.length === 0) {
+                listElement.innerHTML = '<li style="text-align:center; padding:20px; color:#999;">記録がありません</li>';
+                return;
+            }
+
+            let currentDateStr = '';
+            const currentYear = new Date().getFullYear();
+
+            logs.forEach(log => {
+                const date = new Date(log.timestamp);
+                const year = date.getFullYear();
+                let headerDateStr = `${date.getMonth() + 1}月${date.getDate()}日 (${getDayName(date.getDay())})`;
+                if (year !== currentYear) headerDateStr = `${year}年 ${headerDateStr}`;
+
+                if (headerDateStr !== currentDateStr) {
+                    const header = document.createElement('li');
+                    header.className = 'date-header';
+                    header.innerText = headerDateStr;
+                    listElement.appendChild(header);
+                    currentDateStr = headerDateStr;
+                }
+
+                const li = document.createElement('li');
+                li.className = 'log-item';
+                
+                let typeClass = '';
+                let displayType = log.type.replace('（', ' ').replace('）', '');
+
+                if (log.type.includes('おしっこ')) {
+                    if (log.type.includes('成功')) typeClass = 'type-pee-ok';
+                    else if (log.type.includes('失敗')) typeClass = 'type-pee-ng';
+                    else typeClass = 'type-pee-ok';
+                } else if (log.type.includes('うんこ')) {
+                    if (log.type.includes('成功')) typeClass = 'type-poo-ok';
+                    else if (log.type.includes('失敗')) typeClass = 'type-poo-ng';
+                    else typeClass = 'type-poo';
+                }
+
+                li.innerHTML = `
+                    <div class="log-info">
+                        <span class="log-type ${typeClass}">${displayType}</span>
+                        <span class="log-time">${formatTime(log.timestamp)}</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="edit-btn" onclick="editLog(${log.id})">編集</button>
+                        <button class="delete-btn" onclick="deleteLog(${log.id})">削除</button>
+                    </div>
+                `;
+                listElement.appendChild(li);
+            });
+        }
+
+        function toggleHistory() {
+            const list = document.getElementById('history-list');
+            if (list.style.display === 'none' || list.style.display === '') {
+                list.style.display = 'block';
+                renderHistory();
+            } else {
+                list.style.display = 'none';
+            }
+        }
+
+        function deleteLog(id) {
+            if(confirm('この記録を削除しますか？')) {
+                logs = logs.filter(log => log.id !== id);
+                saveLogs();
+                updateDisplay();
+                renderHistory();
+            }
+        }
+
+        function clearAllData() {
+            if(confirm('全てのデータを削除しますか？')) {
+                localStorage.removeItem(STORAGE_KEY);
+                logs = [];
+                updateDisplay();
+                renderHistory();
+            }
+        }
+
+        function getDayName(dayIndex) {
+            const days = ['日', '月', '火', '水', '木', '金', '土'];
+            return days[dayIndex];
+        }
+
+        function saveLogs() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+        }
+
+        function loadLogs() {
+            const v4Data = localStorage.getItem('toilet_log_v4');
+            if(v4Data) {
+                logs = JSON.parse(v4Data);
+                localStorage.setItem(STORAGE_KEY, v4Data);
+                localStorage.removeItem('toilet_log_v4');
+            } else {
+                const data = localStorage.getItem(STORAGE_KEY);
+                if (data) logs = JSON.parse(data);
+            }
+        }
+    </script>
+</body>
+</html>
