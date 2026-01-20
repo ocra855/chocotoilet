@@ -313,25 +313,25 @@
 
         <div class="section-title">おしっこ</div>
         <div class="button-group">
-            <button id="btn-pee-ok" class="action-btn" onclick="addLog('おしっこ（成功）')">
+            <button id="btn-pee-ok" class="action-btn" onclick="addLog('おしっこ（おむつ以外）')">
                 <span class="icon">😊</span>
-                成功
+                おむつ以外
             </button>
-            <button id="btn-pee-ng" class="action-btn" onclick="addLog('おしっこ（失敗）')">
+            <button id="btn-pee-ng" class="action-btn" onclick="addLog('おしっこ（おむつ）')">
                 <span class="icon">😭</span>
-                失敗
+                おむつ
             </button>
         </div>
 
         <div class="section-title">うんこ</div>
         <div class="button-group">
-            <button id="btn-poo-ok" class="action-btn" onclick="addLog('うんこ（成功）')">
+            <button id="btn-poo-ok" class="action-btn" onclick="addLog('うんこ（おむつ以外）')">
                 <span class="icon">💩</span>
-                成功
+                おむつ以外
             </button>
-            <button id="btn-poo-ng" class="action-btn" onclick="addLog('うんこ（失敗）')">
+            <button id="btn-poo-ng" class="action-btn" onclick="addLog('うんこ（おむつ）')">
                 <span class="icon">😱</span>
-                失敗
+                おむつ
             </button>
         </div>
 
@@ -505,11 +505,11 @@
 
                     elapsedEl.innerHTML = `(${getElapsedTime(log.timestamp)})`;
 
-                    if (log.type.includes("成功")) {
-                        detailEl.innerHTML = "成功 ✨";
+                    if (log.type.includes("おむつ以外")) {
+                        detailEl.innerHTML = "おむつ以外 ✨";
                         detailEl.className = "status-detail tag-ok";
-                    } else if (log.type.includes("失敗")) {
-                        detailEl.innerHTML = "失敗 💦";
+                    } else if (log.type.includes("おむつ")) {
+                        detailEl.innerHTML = "おむつ 💦";
                         detailEl.className = "status-detail tag-ng";
                     } else {
                         detailEl.innerHTML = "";
@@ -614,12 +614,12 @@
                     let displayType = log.type.replace("（", " ").replace("）", "");
 
                     if (log.type.includes("おしっこ")) {
-                        if (log.type.includes("成功")) typeClass = "type-pee-ok";
-                        else if (log.type.includes("失敗")) typeClass = "type-pee-ng";
+                        if (log.type.includes("おむつ以外")) typeClass = "type-pee-ok";
+                        else if (log.type.includes("おむつ")) typeClass = "type-pee-ng";
                         else typeClass = "type-pee-ok";
                     } else if (log.type.includes("うんこ")) {
-                        if (log.type.includes("成功")) typeClass = "type-poo-ok";
-                        else if (log.type.includes("失敗")) typeClass = "type-poo-ng";
+                        if (log.type.includes("おむつ以外")) typeClass = "type-poo-ok";
+                        else if (log.type.includes("おむつ")) typeClass = "type-poo-ng";
                         else typeClass = "type-poo";
                     }
 
